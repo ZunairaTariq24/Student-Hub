@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Seller Dashboard - Chats</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root{--accent:#0d6efd}
+    body{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; margin:0}
+    .sidebar-frame{position:fixed; top:0; left:0; width:240px; height:100vh; border:none}
+    .content{margin-left:240px; padding:20px}
+
+    /* Chat layout */
+    .chat-wrap{height:78vh; display:flex; gap:1rem}
+    .contacts{width:340px; border:1px solid #e9ecef; border-radius:8px; overflow:hidden; display:flex; flex-direction:column}
+    .contacts .search{padding:10px}
+    .contacts .list{overflow-y:auto; flex:1}
+    .contact-item{cursor:pointer}
+    .contact-item.active{background:#f8f9fa}
+
+    .conversation{flex:1; border:1px solid #e9ecef; border-radius:8px; display:flex; flex-direction:column; overflow:hidden}
+    .conv-header{background:var(--accent); color:#fff; padding:10px 12px; display:flex; align-items:center; gap:10px}
+    .conv-body{flex:1; padding:14px; overflow-y:auto; background:#f7f7fb}
+    .conv-footer{padding:10px; border-top:1px solid #ececec; display:flex; gap:8px}
+
+    .bubble{display:inline-block; padding:8px 12px; border-radius:18px; max-width:74%;}
+    .sent{background:var(--accent); color:#fff; margin-left:auto; text-align:right}
+    .received{background:#e9ecef; color:#222; margin-right:auto}
+
+    /* small screens: contacts first; show back button */
+    @media (max-width: 767px){
+      .chat-wrap{flex-direction:column}
+      .contacts{width:100%; height:40vh}
+      .conversation{width:100%; height:60vh}
+      .conv-header .back-btn{display:inline-flex}
+    }
+    .conv-header .back-btn{display:none}
+    .avatar{width:44px; height:44px; border-radius:50%; object-fit:cover}
+    .small-muted{font-size:12px; color:#6c757d}
+
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar (same iframe approach you used earlier) -->
+  <iframe src="seller_dashboard.html" class="sidebar-frame"></iframe>
+
+  <!-- Main content -->
+  <div class="content">
+    <div class="container-fluid">
+      <h3 class="mb-3">Chats</h3>
+      <div class="chat-wrap">
+
+        <!-- Contacts column -->
+        <div class="contacts">
+          <div class="search border-bottom">
+            <input id="contactSearch" class="form-control" placeholder="Search contacts..." />
+          </div>
+          <div class="list list-group list-group-flush" id="contactsList" role="list">
+            <!-- contacts rendered by JS -->
+          </div>
+        </div>
+
+        <!-- Conversation column -->
+        <div class="conversation">
+          <div class="conv-header d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+              <button class="btn btn-sm btn-light back-btn" onclick="backToList()">←</button>
+              <img id="convAvatar" class="avatar" src="https://via.placeholder.com/44" alt="avatar">
+              <div>
+                <div id="convName" class="fw-bold">Select a chat</div>
+                <div id="convStatus" class="small-muted">Last seen recently</div>
+              </div>
+            </div>
+            <div>
+              <button class="btn btn-sm btn-outline-light" id="convClose">Close</button>
+            </div>
+          </div>
+
+          <div id="convBody" class="conv-body">
+            <div class="text-center small-muted">Select a conversation from the left to start chatting.</div>
+          </div>
+
+          <div class="conv-footer">
+            <input id="msgInput" class="form-control" placeholder="Type a message" />
+            <button id="sendBtn" class="btn btn-primary">Send</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ---------- Dummy data (seed) ----------
+    const seedChats = {
+      "buyer1": {
+        id: 'buyer1', name: 'Ayesha Khan', avatar: 'https://i.pravatar.cc/150?img=12',
+        messages: [
+          {from: 'them', text: 'Hi, is this jacket still available?', time: Date.now()-1000*60*60},
+          {from: 'me', text: 'Yes! Size M only. Want it?', time: Date.now()-1000*60*50},
+          {from: 'them', text: 'I will take it. How to pay?', time: Date.now()-1000*60*40}
+        ]
+      },
+      "buyer2": {
+        id: 'buyer2', name: 'Bilal Ahmed', avatar: 'https://i.pravatar.cc/150?img=8',
+        messages: [
+          {from: 'them', text: 'Can you ship to Lahore?', time: Date.now()-1000*60*60*24},
+          {from: 'me', text: 'Yes, courier charges 300', time: Date.now()-1000*60*60*23}
+        ]
+      },
+      "buyer3": {
+        id: 'buyer3', name: 'Sara Iqbal', avatar: 'https://i.pravatar.cc/150?img=5',
+        messages: [
+          {from: 'them', text: 'Do you have more colors?', time: Date.now()-1000*60*30}
+        ]
+      }
+    };
+
+    // Use localStorage to persist during development
+    const STORAGE_KEY = 'seller_chats_v1';
+    function loadChats() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(seedChats));
+        return seedChats;
+      }
+      try { return JSON.parse(raw); } catch(e){ localStorage.setItem(STORAGE_KEY, JSON.stringify(seedChats)); return seedChats; }
+    }
+    function saveChats(data){ localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+
+    let chats = loadChats();
+    let activeId = null;
+
+    // ---------- UI helpers ----------
+    const contactsList = document.getElementById('contactsList');
+    const convBody = document.getElementById('convBody');
+    const convName = document.getElementById('convName');
+    const convAvatar = document.getElementById('convAvatar');
+    const convStatus = document.getElementById('convStatus');
+    const msgInput = document.getElementById('msgInput');
+    const sendBtn = document.getElementById('sendBtn');
+
+    function formatTime(ts){ const d = new Date(ts); return d.toLocaleString(); }
+
+    function renderContacts(filter=''){
+      contactsList.innerHTML = '';
+      const ids = Object.keys(chats);
+      ids.forEach(id=>{
+        const c = chats[id];
+        if(filter && !c.name.toLowerCase().includes(filter.toLowerCase())) return;
+        const last = c.messages[c.messages.length-1];
+        const snippet = last ? (last.text.length>40? last.text.slice(0,40)+'...' : last.text) : '';
+        const el = document.createElement('div');
+        el.className = 'list-group-item list-group-item-action d-flex gap-3 py-3 contact-item';
+        el.setAttribute('data-id', id);
+        el.innerHTML = `
+          <img src="${c.avatar}" class="avatar" alt="av">
+          <div class="d-flex w-100 justify-content-between">
+            <div>
+              <div class="fw-bold">${c.name}</div>
+              <div class="small-muted">${snippet}</div>
+            </div>
+            <div class="text-end small-muted">${last ? new Date(last.time).toLocaleTimeString() : ''}</div>
+          </div>`;
+        el.addEventListener('click', ()=> openChat(id));
+        contactsList.appendChild(el);
+      });
+    }
+
+    function openChat(id){
+      activeId = id;
+      const c = chats[id];
+      convName.textContent = c.name;
+      convAvatar.src = c.avatar;
+      convStatus.textContent = 'online';
+      // render messages
+      convBody.innerHTML = '';
+      c.messages.forEach(msg=>{
+        const m = document.createElement('div');
+        m.className = msg.from === 'me' ? 'd-flex sent mb-2' : 'd-flex received mb-2';
+        const b = document.createElement('div'); b.className='bubble'; b.textContent = msg.text;
+        m.appendChild(b);
+        convBody.appendChild(m);
+      });
+      convBody.scrollTop = convBody.scrollHeight;
+      // focus input
+      msgInput.focus();
+    }
+
+    function backToList(){ activeId = null; convName.textContent = 'Select a chat'; convAvatar.src='https://via.placeholder.com/44'; convStatus.textContent=''; convBody.innerHTML = '<div class="text-center small-muted">Select a conversation from the left to start chatting.</div>' }
+
+    function sendMessage(){
+      if(!activeId) return alert('Select a chat first');
+      const text = msgInput.value.trim(); if(!text) return;
+      const item = {from:'me', text, time: Date.now()};
+      chats[activeId].messages.push(item); saveChats(chats);
+      // append to UI
+      const m = document.createElement('div'); m.className='d-flex sent mb-2'; const b=document.createElement('div'); b.className='bubble'; b.textContent=text; m.appendChild(b); convBody.appendChild(m);
+      convBody.scrollTop = convBody.scrollHeight; msgInput.value='';
+      // fake auto-reply
+      setTimeout(()=>{
+        const reply = {from:'them', text:'Thanks — I will confirm shortly.', time:Date.now()};
+        chats[activeId].messages.push(reply); saveChats(chats);
+        const r = document.createElement('div'); r.className='d-flex received mb-2'; const br = document.createElement('div'); br.className='bubble'; br.textContent=reply.text; r.appendChild(br); convBody.appendChild(r); convBody.scrollTop = convBody.scrollHeight;
+      }, 900 + Math.random()*800);
+    }
+
+    // search
+    document.getElementById('contactSearch').addEventListener('input', (e)=> renderContacts(e.target.value));
+    sendBtn.addEventListener('click', sendMessage);
+    msgInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter') sendMessage(); });
+
+    // initial render
+    renderContacts();
+
+    // conv close button -> navigate back to main dashboard page if you want; here it will just clear selection
+    document.getElementById('convClose').addEventListener('click', ()=>{ backToList(); });
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seller Dashboard - Products</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/yourfontawesomekit.js" crossorigin="anonymous"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+    }
+    #sidebar {
+      width: 240px;
+      height: 100vh;
+      border-right: 1px solid #ddd;
+      position: fixed;
+      top: 0;
+      left: 0;
+    }
+    .content {
+      margin-left: 240px; /* push content */
+      padding: 20px;
+      flex-grow: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar placeholder -->
+  <div id="sidebar"></div>
+
+  <!-- Main Content -->
+  <div class="content">
+    <h2 class="mb-4">Products</h2>
+
+    <!-- Search and Filters -->
+    <div class="d-flex flex-wrap justify-content-between mb-3">
+      <input type="text" id="searchInput" class="form-control w-50" placeholder="Search product...">
+
+      <div>
+        <button class="btn btn-outline-secondary btn-sm" onclick="filterProducts('all')">All</button>
+        <button class="btn btn-outline-warning btn-sm" onclick="filterProducts('low')">Low Stock</button>
+        <button class="btn btn-outline-danger btn-sm" onclick="filterProducts('out')">Out of Stock</button>
+        <button class="btn btn-outline-info btn-sm" onclick="filterProducts('latest')">Latest Added</button>
+        <button class="btn btn-outline-primary btn-sm" onclick="filterProducts('edited')">Last Edited</button>
+      </div>
+    </div>
+
+    <!-- Products Table -->
+    <div class="table-responsive">
+      <table class="table table-bordered align-middle" id="productsTable">
+        <thead class="table-dark">
+          <tr>
+            <th>Image</th>
+            <th>Product</th>
+            <th>Stock</th>
+            <th>Last Edited</th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-stock="12" data-edited="2025-09-28" data-latest="2025-09-20">
+            <td><img src="https://via.placeholder.com/60" class="table-img"></td>
+            <td>Leather Bag</td>
+            <td>12</td>
+            <td>2025-09-28</td>
+            <td class="text-center">
+              <button class="btn btn-sm btn-primary"><i class="fas fa-edit"></i> Edit</button>
+              <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> Delete</button>
+              <button class="btn btn-sm btn-warning" onclick="openStockModal(this)"><i class="fas fa-box"></i> Manage Stock</button>
+            </td>
+          </tr>
+          <tr data-stock="0" data-edited="2025-09-25" data-latest="2025-09-15">
+            <td><img src="https://via.placeholder.com/60" class="table-img"></td>
+            <td>Books Set</td>
+            <td>0</td>
+            <td>2025-09-25</td>
+            <td class="text-center">
+              <button class="btn btn-sm btn-primary"><i class="fas fa-edit"></i> Edit</button>
+              <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> Delete</button>
+              <button class="btn btn-sm btn-warning" onclick="openStockModal(this)"><i class="fas fa-box"></i> Manage Stock</button>
+            </td>
+          </tr>
+          <tr data-stock="3" data-edited="2025-09-30" data-latest="2025-09-29">
+            <td><img src="https://via.placeholder.com/60" class="table-img"></td>
+            <td>Hijab</td>
+            <td>3</td>
+            <td>2025-09-30</td>
+            <td class="text-center">
+              <button class="btn btn-sm btn-primary"><i class="fas fa-edit"></i> Edit</button>
+              <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> Delete</button>
+              <button class="btn btn-sm btn-warning" onclick="openStockModal(this)"><i class="fas fa-box"></i> Manage Stock</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Stock Management Modal -->
+  <div class="modal fade" id="stockModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Update Stock</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="stockForm">
+            <div class="mb-3">
+              <label for="stockValue" class="form-label">New Stock Quantity</label>
+              <input type="number" id="stockValue" class="form-control" min="0" required>
+            </div>
+            <button type="submit" class="btn btn-success">Update</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Load sidebar HTML dynamically
+    fetch("seller_dashboard.html")
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById("sidebar").innerHTML = data;
+      });
+
+    const searchInput = document.getElementById("searchInput");
+    const table = document.getElementById("productsTable").getElementsByTagName("tbody")[0];
+    let currentRow;
+
+    // Search filter
+    searchInput.addEventListener("keyup", function() {
+      const value = this.value.toLowerCase();
+      [...table.rows].forEach(row => {
+        row.style.display = row.cells[1].innerText.toLowerCase().includes(value) ? "" : "none";
+      });
+    });
+
+    // Filters
+    function filterProducts(type) {
+      [...table.rows].forEach(row => {
+        const stock = parseInt(row.getAttribute("data-stock"));
+        const edited = new Date(row.getAttribute("data-edited"));
+        const latest = new Date(row.getAttribute("data-latest"));
+        row.style.display = "";
+
+        if (type === "out" && stock > 0) row.style.display = "none";
+        if (type === "low" && (stock === 0 || stock > 5)) row.style.display = "none";
+        if (type === "latest") {
+          const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 10);
+          if (latest < cutoff) row.style.display = "none";
+        }
+        if (type === "edited") {
+          const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 5);
+          if (edited < cutoff) row.style.display = "none";
+        }
+      });
+    }
+
+    // Stock Modal
+    function openStockModal(button) {
+      currentRow = button.closest("tr");
+      const currentStock = currentRow.cells[2].innerText;
+      document.getElementById("stockValue").value = currentStock;
+      new bootstrap.Modal(document.getElementById("stockModal")).show();
+    }
+
+    document.getElementById("stockForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const newStock = document.getElementById("stockValue").value;
+      currentRow.cells[2].innerText = newStock;
+      currentRow.setAttribute("data-stock", newStock);
+      bootstrap.Modal.getInstance(document.getElementById("stockModal")).hide();
+    });
+  </script>
+  
+
+</body>
+</html>
