@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Hub Marketplace</title>
+</head>
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+   <!-- <script src="js/script.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<body>
+  <!-- Header -->
+  <header class="navbar">
+    <div class="logo">Student Hub</div>
+    <nav>
+      <ul>
+      
+        <li><a href="#services">Categories</a></li>
+        <li><a href="#gallery">Products</a></li>
+<li><a href="#" id="loginBtn">Login</a></li>
+
+<li><a href="cart.html"><i class="fa-solid fa-cart-shopping"></i></a></li>
+        
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Hero Banner -->
+  <section class="hero" id="hero">
+    <div class="hero-overlay">
+    <div class="hero-buttons">
+  <form class="hero-search" action="all-products.html" method="get">
+    <input type="text" name="q" placeholder="Search products..." required>
+    <button type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+  </form>
+<a href="seller_signup.html" class="secondary">Start Selling</a>
+<a href="#gallery" class="secondary">View Products</a>
+
+</div>
+
+    </div>
+  </section>
+
+  <!-- Marketplace Welcome -->
+  <section class="welcome">
+    <h2>Welcome To FJWU Marketplace</h2>
+  </section>
+
+  <!-- Categories -->
+<section class="service service-slider mySwiper" id="services">
+        <div class="content">
+            <h3 class="info" style="color: rgb(50, 77, 55);">Categories</h3>
+          </div>
+        <div class="swiper-wrapper">
+           <div class="swiper-slide"><b>Hijab</b><img src="src/images/Hijab.jpg" alt=""></div>
+           <div class="swiper-slide"><b>Hijab</b><img src="src/images/Decor.jpg" alt=""></div>
+           <div class="swiper-slide"><b>Hijab</b><img src="src/images/Paintings.jpg" alt=""></div>
+           <div class="swiper-slide"><b>Hijab</b><img src="src/images/Clothes.jpg" alt=""></div>
+           <div class="swiper-slide"><b>Hijab</b><img src="src/images/bag.jpg" alt=""></div>
+           <div class="swiper-slide"><b>Hijab</b><img src="src/images/cake.jpg" alt=""></div>
+           <div class="swiper-slide"><b>Hijab</b><img src="src/images/care.jpg" alt=""></div>
+           <div class="swiper-slide"><b>Hijab</b><img src="src/images/boooks.jpeg" alt=""></div> <div class="swiper-slide">Bag<img src="src/images/bag.jpg" alt=""></div>
+           <div class="swiper-slide"><b>Hijab</b><img src="src/images/cake.jpg" alt=""></div>
+           <div class="swiper-slide"><b>Hijab</b><img src="src/images/care.jpg" alt=""></div>
+           <div class="swiper-slide"><b>Hijab</b><img src="src/images/boooks.jpeg" alt=""></div>
+     </div>
+</section>
+  <!-- Products -->
+  
+ <div id="productsSection"> </div>
+<script>
+  fetch("products.html")
+    .then(res => res.text())
+    .then(data => {
+      document.getElementById("productsSection").innerHTML = data;
+    });
+</script>
+<div style="text-align: center;">
+  <a href="all-products.html" class="btn btn-success">Explore</a>
+</div>
+
+<br>
+  <!-- Footer -->
+<!-- Footer will be injected here -->
+  <div id="footer"></div>
+
+  <script>
+    // Load footer.html dynamically
+    fetch("footer.html")
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById("footer").innerHTML = data;
+      });
+  </script>
+<!-- Login Modal -->
+<div id="loginModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" id="closeLogin">&times;</span>
+    <h2>Login to Student Hub</h2>
+    <form id="loginForm" novalidate>
+      <label for="phone">Phone Number</label>
+      <input type="tel" id="phone" name="phone" placeholder="+92 300 1234567" required pattern="^\+?\d{7,15}$" />
+      
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" placeholder="example@mail.com" required />
+      
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="••••••••" required minlength="6" />
+      
+      <button type="submit" class="primary-btn">Login</button>
+      
+      <div class="options">
+        <a href="#" id="signupLink">Sign Up</a> <!-- ✅ Correct ID -->
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!-- Signup Modal -->
+<div id="signupModal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <span class="close-btn" id="closeSignup">&times;</span>
+    <h2>Sign Up for Student Hub</h2>
+    <form id="signupForm" novalidate>
+      <label for="name">Full Name</label>
+      <input type="text" id="name" name="name" placeholder="John Doe" required />
+
+      <label for="department">Department</label>
+      <input type="text" id="department" name="department" placeholder="Computer Science" required />
+
+      <label for="emailSignup">Email</label>
+      <input type="email" id="emailSignup" name="email" placeholder="example@mail.com" required />
+
+      <label for="passwordSignup">Password</label>
+      <input type="password" id="passwordSignup" name="password" placeholder="••••••••" required minlength="6" />
+
+      <label for="phoneSignup">Phone Number</label>
+      <input type="tel" id="phoneSignup" name="phone" placeholder="+92 300 1234567" required pattern="^\+?\d{7,15}$" />
+
+      <button type="submit" class="primary-btn">Sign Up</button>
+    </form>
+  </div>
+</div>
+<script src="js/script.js"></script>
+
+</body>
+</html>

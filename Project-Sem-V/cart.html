@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Cart - Student Hub</title>
+ 
+  <style>
+    /* Cart Page Styles */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    h2 {
+      margin: 20px;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .seller {
+      margin: 20px;
+    }
+
+    .seller-title {
+      font-weight: bold;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cart-item {
+      display: flex;
+      align-items: center;
+      border: 1px solid #ddd;
+      background: #fdf2f4;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      gap: 15px;
+    }
+
+    .cart-item img {
+      width: 90px;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 5px;
+    }
+
+    .cart-item-info {
+      flex: 1;
+    }
+
+    .cart-item-info h4 {
+      font-size: 16px;
+      margin: 0 0 6px;
+    }
+
+    .cart-item-info p {
+      margin: 0;
+      font-size: 14px;
+      color: #444;
+    }
+
+    .quantity-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .quantity-control button {
+      border: none;
+      background: #ddd;
+      padding: 4px 10px;
+      border-radius: 3px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .cart-summary {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 30px 20px;
+      padding: 15px;
+      border-top: 2px solid #ccc;
+      font-size: 16px;
+    }
+
+    .checkout-btn {
+      background: #2f4f2f;
+      color: #fff;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+
+  
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+   <!-- <script src="js/script.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<body>
+</head>
+
+  <!-- Header -->
+  <header class="navbar">
+    <div class="logo">Student Hub</div>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Cart Section -->
+  <h2>My Cart</h2>
+
+  <!-- Seller 1 -->
+  <div class="seller">
+    <div class="seller-title">
+      <input type="checkbox"> Seller 1
+    </div>
+
+    <div class="cart-item">
+      <input type="checkbox">
+      <img src="src/images/cake.jpg" alt="Cake">
+      <div class="cart-item-info">
+        <h4>Chocolate Cake</h4>
+        <p>Price: Rs. 1200</p>
+       <div class="quantity-control">
+  <button class="minus">-</button>
+  <input type="number" class="qty" value="1" min="1">
+  <button class="plus">+</button>
+</div>
+
+      </div>
+    </div>
+
+    <div class="cart-item">
+      <input type="checkbox">
+      <img src="src/images/donuts.jpg" alt="Donut">
+      <div class="cart-item-info">
+        <h4>Donuts Box</h4>
+        <p>Price: Rs. 600</p>
+     <div class="quantity-control">
+  <button class="minus">-</button>
+  <input type="number" class="qty" value="1" min="1">
+  <button class="plus">+</button>
+</div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Seller 2 -->
+  <div class="seller">
+    <div class="seller-title">
+      <input type="checkbox"> Seller 2
+    </div>
+
+    <div class="cart-item">
+      <input type="checkbox">
+      <img src="src/images/flower.jpg" alt="Flower">
+      <div class="cart-item-info">
+        <h4>Handmade Flower</h4>
+        <p>Price: Rs. 300</p>
+  <div class="quantity-control">
+  <button class="minus">-</button>
+  <input type="number" class="qty" value="1" min="1">
+  <button class="plus">+</button>
+</div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Seller 3 -->
+  <div class="seller">
+    <div class="seller-title">
+      <input type="checkbox"> Seller 3
+    </div>
+
+  <div class="cart-item">
+  <span>Birthday Party Decor</span>
+  <div class="quantity-control">
+   <div class="quantity-control">
+  <button class="minus">-</button>
+  <input type="number" class="qty" value="1" min="1">
+  <button class="plus">+</button>
+</div>
+
+  <span class="price" data-price="950">Rs.950</span>
+</div>
+   </div>
+  </div>
+
+  <!-- Cart Summary -->
+  <div class="cart-summary">
+    <div>
+      <p>No. Of Items: 4</p>
+      <p>Subtotal: Rs. 2950</p>
+
+    </div>
+    <button class="checkout-btn">Check Out</button>
+  </div>
+   <section class="gallery" id="gallery">
+        <div class="content">
+            <h3 class="info" style="color: rgb(50, 77, 55); ">Products</h3>
+          </div>
+        <img src="" alt="" class="bor">
+            <div class="inner-box">
+                <div class="gallery-box">
+                    <img src="src/images/bag1.jpg" alt="">
+                    <div class="gallery-content">
+                        <h3>BirthDay Party Decor</h3>
+                      <a href="birthdayDecor.html" class="btn">Explore</a>
+                    </div>
+                    </div>
+
+                    <div class="gallery-box">
+                    <img src="src/images/crochet.jpg" alt="">
+                    <div class="gallery-content">
+                        <h3>Anniversary Decor</h3>
+   <a href="anniversaryDecor.html" class="btn">Explore</a>
+                    </div>
+                    </div>
+
+                    <div class="gallery-box">
+                    <img src="src/images/clothes1.jpg" alt="">
+                    <div class="gallery-content">
+                        <h3>Wedding Decor</h3>
+                       <a href="dholkiDecor.html" class="btn">Explore</a>
+                    </div>
+                    </div>
+
+                    <div class="gallery-box">
+                    <img src="src/images/jewelery.jpg" alt="">
+                    <div class="gallery-content">
+                        <h3>Aqiqah Party</h3>
+                        <a href="aqiqahParty.html" class="btn">Explore</a>
+                    </div>
+                    </div>
+
+                    <div class="gallery-box">
+                    <img src="src/images/hijab1.jpg" alt="">
+                    <div class="gallery-content">
+                        <h3>Bridal Shower Decor</h3>
+                           <a href="birthdayDecor.html" class="btn">Explore</a>
+                    </div>
+                    </div>
+
+                    <div class="gallery-box">
+                    <img src="src/images/desk.jpg" alt="">
+                    <div class="gallery-content">
+                        <h3>Milad Decor</h3>
+                                    <a href="miladDecor.html" class="btn">Explore</a>
+                    </div>
+                    </div>
+                </div>
+            </div>
+    </section>
+<br>
+
+  <div id="footer"></div>
+
+  <script>
+    // Load footer.html dynamically
+    fetch("footer.html")
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById("footer").innerHTML = data;
+      });
+  </script>
+  <script src="js/cart.js"></script>
+</body>
+</html>
